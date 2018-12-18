@@ -5,7 +5,6 @@ import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
 
-import application.FileTransferController;
 import datatypes.FileInformation;
 import datatypes.ProgressStream;
 import javafx.scene.control.ProgressBar;
@@ -15,11 +14,11 @@ import static application.FileTransferController.showAlert;
 
 public class TCPClient {
     
-    public static String sharePath;
+    public static String sharePath = null;
     private static Socket clientSocket = null;
     
     private static BufferedOutputStream bos = null;
-    //private static BufferedInputStream bis = null;
+    public static BufferedOutputStream bos_fos = null;
     private static ProgressStream ps = null;
     
     public static ArrayList<FileInformation> fileInformation = null;
@@ -37,7 +36,8 @@ public class TCPClient {
     }
 
     public static void setDownloadPath(String sharePath) throws AssertionError {	
-    	assert(TCPClient.sharePath != "BITTE PFAD ANGEBEN" && TCPClient.sharePath != null); 
+    	assert(!(sharePath.equals("BITTE PFAD ANGEBEN"))); 
+    	assert(sharePath != null);
         TCPClient.sharePath = sharePath; 	
     }
     
@@ -105,7 +105,7 @@ public class TCPClient {
     		System.err.println("ps is already released");
     		ae.printStackTrace();
     	} catch (IOException e) {
-    		System.err.println("ps could not be closed - setting bis null");
+    		System.err.println("ps could not be closed - setting ps null");
     		ps = null;
 		}
     	
@@ -150,9 +150,9 @@ public class TCPClient {
     public static void downloadFileFromServer(String fileName) {
     	String filePath = sharePath + fileName;
     	
-     
+    	System.out.println("downloading...");
     	try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        	BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filePath))) {
+    			BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filePath))) {
             assert(bos != null && baos != null);
     		// read fileLength from Client in order to avoid read-blocking and closing the socket on serverside (EOF)
             // marshalling
@@ -171,14 +171,14 @@ public class TCPClient {
             baos.write(file);
             bos.write(baos.toByteArray());
             bos.flush();   
-            System.out.println("file recieved");
+            System.out.println("file downloaded");
 		
         } catch (AssertionError ae) {
-			System.err.println("some client streams are null!");
+			System.err.println("some streams are null");
 			ae.printStackTrace();
 			//TODO ALERT -> retry
 		} catch (IOException e) {
-        	System.err.println("some streams could not be initialized!");
+        	System.err.println("some streams could not be initialized");
 			e.printStackTrace();
 			//TODO ALERT -> retry
 		}
@@ -233,6 +233,7 @@ public class TCPClient {
 			} catch (IOException e) {
 				System.out.println("error occured while reading from streams - terminating connection");
 				e.printStackTrace();
+				showAlert("Verbindungsfehler!", "Die Verbindung zum Server ist abgebrochen.");
 				closeStreams();
 			}
 			ProgressStream.resetProgressBar();
