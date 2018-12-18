@@ -8,6 +8,7 @@ import java.net.SocketAddress;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.ResourceBundle;
 
 import javax.swing.ProgressMonitor;
@@ -100,7 +101,7 @@ public class FileTransferController implements Initializable{
     
     @FXML
     private void clickedDownload(MouseEvent e) {
-    	//String fileName = listView.getSelectionModel().getSelectedItem();
+    	String fileName = listView.getSelectionModel().getSelectedItem();
     	downloadThread = new Service<Void>() {
         	@Override
         	protected Task<Void> createTask(){
@@ -108,9 +109,10 @@ public class FileTransferController implements Initializable{
         			@Override
         			protected Void call() throws Exception{
         	    		//request file download
-        				
         				labelDownload.setVisible(false);
-        				ProgressStream.resetProgress();
+        				ProgressStream.resetProgressBar();
+        				System.out.println(ProgressStream.bytesRead);
+        				System.out.println(ProgressStream.progress);
         	    		downloadSuc.setVisible(false);
         				downloadCancel.setVisible(true);
         	    		requestFileDownload();
@@ -124,9 +126,9 @@ public class FileTransferController implements Initializable{
     		public void handle(WorkerStateEvent event) {
     			downloadCancel.setVisible(false);
     			downloadSuc.setVisible(true);
-				ProgressStream.resetProgress();
+				ProgressStream.resetProgressBar();
 				labelDownload.setVisible(true);
-				labelDownload.setText((formatBytesRead(ProgressStream.fileLength))+ " übertragen");
+				labelDownload.setText(fileName +  " übertragen");
     		}
     	});
     	downloadThread.restart();
@@ -161,8 +163,8 @@ public class FileTransferController implements Initializable{
     	items = FXCollections.observableArrayList();
     	listView.setItems(items);
     	listView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+		initializeProgressBar();
     	//imageView = new ImageView(new Image("application/images/icons8-geprueft-96.png"));
-    	initializeProgressBar();
 		//listView.setCellFactory(new Callback<ListView<String>, ListCell<String>>() {
 //            @Override
 //            public ListCell<String> call(ListView<String> p) {
@@ -295,7 +297,7 @@ public class FileTransferController implements Initializable{
 	private void cancelDownload(){
 		// streams clearen
 		downloadCancel.setVisible(false);
-		ProgressStream.resetProgress();
+		ProgressStream.resetProgressBar();
 	    downloadThread.cancel();
 	    System.out.println("cancelled.");		
 	}
@@ -408,18 +410,18 @@ public class FileTransferController implements Initializable{
     }
     
     public String formatBytesRead(double bytesRead) {
-    	if (bytesRead < 1000) return bytesRead + " Bytes"; 
+    	if (bytesRead < 1000) return (int)bytesRead + " Bytes"; 
     	else if(bytesRead >= 1000 && bytesRead < 1000000) {
-    		return String.format( "%.2f", bytesRead / (double)1000) + " KB";
+    		return String.format(Locale.US, "%.2f", bytesRead / (double)1000) + " KB";
     		
     	}
     	else if (bytesRead >= 1000000 && bytesRead < 1000000000) {
-    		return String.format( "%.2f", bytesRead / (double)1000) + " MB";
+    		return String.format(Locale.US, "%.2f", bytesRead / (double)1000000) + " MB";
     	}
     	else if (bytesRead >= 1000000000) {
-    		return String.format( "%.2f", bytesRead / (double)1000) + " GB";
+    		return String.format(Locale.US, "%.2f", bytesRead / (double)1000000000) + " GB";
     	}
-    	else return bytesRead + " Bytes";
+    	else return (int)bytesRead + " Bytes";
     }
     
 /*  
@@ -490,7 +492,6 @@ public class FileTransferController implements Initializable{
     	} catch(AssertionError assErr) {
     		showAlert("Ungültige Auswahl!", "Bitte wählen Sie einen Listeneintrag aus, um eine Datei herunterzuladen.");
     	}
-    	
     }
     	/*
     	listView.setCellFactory(param -> new ListCell<String>() {
@@ -515,7 +516,7 @@ public class FileTransferController implements Initializable{
     	TCPClient.receiveDirInformation();
     	listView.getItems().clear();
 		for (FileInformation fi : TCPClient.fileInformation) {
-			listView.getItems().add(fi.fileName+ ", " + fi.fileLength + " Bytes");
+			listView.getItems().add(fi.fileName+ ", " + formatBytesRead(Double.parseDouble(fi.fileLength)));
 		}
     	
     }

@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import application.FileTransferController;
 import datatypes.FileInformation;
 import datatypes.ProgressStream;
+import javafx.scene.control.ProgressBar;
+
 import static utils.MarshallingUtils.*;
 import static application.FileTransferController.showAlert;
 
@@ -158,7 +160,10 @@ public class TCPClient {
             checkConnection(ps.read(fileLengthInBytes));
             int fileLength = unmarshalling(fileLengthInBytes);
             
+            // set FileLength of ProgressStream
+            ProgressStream.setFileLength(fileLength);
             // send data
+			ProgressStream.resetProgressBar();	
         	byte[] file = new byte[fileLength];
         	checkConnection(ps.read(file));
             
@@ -176,7 +181,8 @@ public class TCPClient {
         	System.err.println("some streams could not be initialized!");
 			e.printStackTrace();
 			//TODO ALERT -> retry
-		}  
+		}
+    	
     }
 
     // empfange Share-Ordner Informationen von Server
@@ -219,6 +225,7 @@ public class TCPClient {
 		            checkConnection(ps.read(dataBBuffer));
 		            fileLength = new String(dataBBuffer);
 		            System.out.println("fileLength recieved: "+fileLength);
+		           
 		            //create fileInformation object
 					fileInformation.add(new FileInformation(fileName, fileLength));
 				}
@@ -228,6 +235,7 @@ public class TCPClient {
 				e.printStackTrace();
 				closeStreams();
 			}
+			ProgressStream.resetProgressBar();
 			
 
     }

@@ -100,7 +100,7 @@
                   <Image url="@images/icons8-abbruch.png" />
                </image>
             </ImageView>
-            <Label fx:id="labelTryConnect" layoutX="236.0" layoutY="324.0" text="CONNECT . . ." textFill="#ddd8d8" visible="false">
+            <Label fx:id="labelTryConnect" layoutX="214.0" layoutY="324.0" text="CONNECTING . . ." textFill="#ddd8d8" visible="false">
                <font>
                   <Font size="20.0" />
                </font>
@@ -112,7 +112,7 @@
             </Label>
          </children>
       </AnchorPane>
-      <AnchorPane id="downloadView" fx:id="downloadView" layoutY="125.0" prefHeight="528.0" prefWidth="600.0" style="-fx-background-color: #3D4956;">
+      <AnchorPane id="downloadView" fx:id="downloadView" layoutY="125.0" prefHeight="528.0" prefWidth="600.0" style="-fx-background-color: #3D4956;" visible="false">
          <children>
             <RadioButton layoutX="31.0" layoutY="422.0" mnemonicParsing="false" prefHeight="45.0" prefWidth="142.0" text="SELECT ALL" textFill="#f2813b" wrapText="true">
                <font>
