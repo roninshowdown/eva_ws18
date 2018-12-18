@@ -134,6 +134,9 @@ public class FileTransferController implements Initializable{
 				ProgressStream.resetProgressBar();
 				labelDownload.setVisible(true);
 				labelDownload.setText(fileName +  " übertragen");
+				Platform.runLater(() -> {
+					if(radioSettings.isSelected()) showInExplorer();
+				});
     		}
     	});
     	downloadThread.restart();

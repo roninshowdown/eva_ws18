@@ -162,7 +162,7 @@
       </ImageView>
       <AnchorPane fx:id="settingsView" layoutY="125.0" prefHeight="528.0" prefWidth="600.0" style="-fx-background-color: #3D4956;" visible="false">
          <children>
-            <Label layoutX="40.0" layoutY="47.0" text="DOWNLOADPATH" textFill="#ddd8d8">
+            <Label layoutX="40.0" layoutY="47.0" text="DOWNLOADPFAD" textFill="#ddd8d8">
                <font>
                   <Font size="20.0 " />
                </font>
